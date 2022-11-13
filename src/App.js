@@ -15,94 +15,94 @@ import MyList from "./components/MyList/MyList";
 
 const App = () => {
 
-    const [places, setPlaces] = useState([]);
-    const [filteredPlaces, setFilteredPlaces] = useState([]);
-    const [weatherData, setWeatherData] = useState([]);
+  const [places, setPlaces] = useState([]);
+  const [filteredPlaces, setFilteredPlaces] = useState([]);
+  const [weatherData, setWeatherData] = useState([]);
 
-    const [coordinates, setCoordinates] = useState({})
-    const [bounds, setBounds] = useState({});
+  const [coordinates, setCoordinates] = useState({})
+  const [bounds, setBounds] = useState({});
 
-    const [childClicked, setChildClicked] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
+  const [childClicked, setChildClicked] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-    const [type, setType] = useState('restaurants');
-    const [rating, setRating] = useState('');
+  const [type, setType] = useState('restaurants');
+  const [rating, setRating] = useState('');
 
-    const showList = useSelector(state => state.ui.listIsVisible);
+  const showList = useSelector(state => state.ui.listIsVisible);
 
-    //getting the current location of the user and updating coordinates
-    useEffect(() => {
-        navigator.geolocation.getCurrentPosition(({ coords: { latitude, longitude } }) => {
-            setCoordinates({
-                lat: latitude,
-                lng: longitude
-            });
-        });
-    }, []);
+  //getting the current location of the user and updating coordinates
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(({ coords: { latitude, longitude } }) => {
+      setCoordinates({
+        lat: latitude,
+        lng: longitude
+      });
+    });
+  }, []);
 
-    useEffect(() => {
-        const filteredPlaces = places.filter((place) => Number(place.rating) > rating);
-        setFilteredPlaces(filteredPlaces);
-    }, [rating])
+  useEffect(() => {
+    const filteredPlaces = places.filter((place) => Number(place.rating) > rating);
+    setFilteredPlaces(filteredPlaces);
+  }, [rating])
 
-    useEffect(() => {
-        if (bounds.sw && bounds.ne) {
-            setIsLoading(true);
+  useEffect(() => {
+    if (bounds.sw && bounds.ne) {
+      setIsLoading(true);
 
-            getWeatherData(coordinates.lat, coordinates.lng)
-                .then((data) => setWeatherData(data));
+      getWeatherData(coordinates.lat, coordinates.lng)
+        .then((data) => setWeatherData(data));
 
-            getPlacesData(type, bounds.sw, bounds.ne)
-                .then((data) => {
-                    console.log(data);
-                    setPlaces(data?.filter((place) => place.name && place.num_reviews > 0));
-                    setFilteredPlaces([]);
-                    setRating('');
-                    setIsLoading(false);
-                })
-        }
-    }, [type, bounds]);
+      getPlacesData(type, bounds.sw, bounds.ne)
+        .then((data) => {
+          console.log(data);
+          setPlaces(data?.filter((place) => place.name && place.num_reviews > 0));
+          setFilteredPlaces([]);
+          setRating('');
+          setIsLoading(false);
+        })
+    }
+  }, [type, bounds]);
 
-    const isDesktop = useMediaQuery('(min-width:1020px)');
+  const isDesktop = useMediaQuery('(min-width:1020px)');
 
-    return (
-        <>
-            <CssBaseline />
-            {showList && <MyList />}
-            <Header setCoordinates={setCoordinates} />
-            <Hero />
-            {isDesktop && <Features onSelect={setType} />}
-            <Info />
-            <section id='explore'>
-                <Grid container spacing={3} style={{ width: '100%' }} >
-                    <Grid item xs={12} md={4} >
-                        <List
-                            places={filteredPlaces.length ? filteredPlaces : places}
-                            childClicked={childClicked}
-                            isLoading={isLoading}
-                            type={type}
-                            setType={setType}
-                            rating={rating}
-                            setRating={setRating}
-                        />
-                    </Grid>
-                    <Grid item xs={12} md={8} >
-                        <Map
-                            setCoordinates={setCoordinates}
-                            setBounds={setBounds}
-                            coordinates={coordinates}
-                            places={filteredPlaces.length ? filteredPlaces : places}
-                            setChildClicked={setChildClicked}
-                            weatherData={weatherData}
-                        />
-                    </Grid>
-                </Grid>
-            </section>
-            <Footer />
+  return (
+    <>
+      <CssBaseline />
+      {showList && <MyList />}
+      <Header setCoordinates={setCoordinates} />
+      <Hero />
+      {isDesktop && <Features onSelect={setType} />}
+      {isDesktop && <Info />}
+      <section id='explore'>
+        <Grid container spacing={3} style={{ width: '100%' }} >
+          <Grid item xs={12} md={4} >
+            <List
+              places={filteredPlaces.length ? filteredPlaces : places}
+              childClicked={childClicked}
+              isLoading={isLoading}
+              type={type}
+              setType={setType}
+              rating={rating}
+              setRating={setRating}
+            />
+          </Grid>
+          <Grid item xs={12} md={8} >
+            <Map
+              setCoordinates={setCoordinates}
+              setBounds={setBounds}
+              coordinates={coordinates}
+              places={filteredPlaces.length ? filteredPlaces : places}
+              setChildClicked={setChildClicked}
+              weatherData={weatherData}
+            />
+          </Grid>
+        </Grid>
+      </section>
+      <Footer />
 
 
-        </>
-    );
+    </>
+  );
 };
 
 export default App;
